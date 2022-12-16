@@ -11,10 +11,12 @@
 + PostgreSQL
 
 ## Setting up Docker
+Build the connect `images`
 ```bash
 docker build -t debezium-connect -f Dockerfile .
 ```
 
+Install the entire component using `docker-compose`
 ```bash
 docker compose up -d
 ```
@@ -22,6 +24,7 @@ docker compose up -d
 
 ## PostgreSQL Data Sources
 
+Run this commandTo start an interactive SQL session.
 ```bash
 docker exec -it postgres psql -U postgres
 ```
@@ -50,6 +53,8 @@ CREATE TABLE bank_marketing
 
 ## PostgreSQL Source Connector
 
+The `postgres-source.json` file contains the configuration settings that allows ksqlDB to access the PostgreSQL data
+
 ```bash
 curl -X POST -H "Accept:application/json" -H "Content-Type: application/json" \
       --data @postgres-source.json http://localhost:8083/connectors
@@ -57,10 +62,11 @@ curl -X POST -H "Accept:application/json" -H "Content-Type: application/json" \
 
 ![topics](https://user-images.githubusercontent.com/85284506/208126565-42d2abc1-fea6-4566-b8fb-a10da757af03.jpg)
 
-The connector will look for the PostgreSQL tables matching the table.whitelist in `json.file` and import it as a Kafka topic.
+The connector will look for the PostgreSQL tables matching the table.whitelist in `postgres-source.json` and import it as a Kafka topic.
 
 ## ksqlDB
 
+Run this command to connect to the ksqlDB server and enter an interactive command-line interface (CLI) session.
 ```docker
 docker exec -it ksqldb-cli ksql http://ksqldb-server:8088
 ```
@@ -94,6 +100,8 @@ CREATE TABLE FINAL_TABLE AS \
 
 
 ## PostgreSQL Sink Connector
+
+The `postgres-sink.json` configuration file will create a table from the topic and send the data back to Postgres.
 
 ```bash
 curl -X POST -H "Accept:application/json" -H "Content-Type: application/json" \
